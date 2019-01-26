@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>首页</title>
+
+		<link href="../AmazeUI-2.4.2/assets/css/amazeui.css" rel="stylesheet" type="text/css" />
+		<link href="../AmazeUI-2.4.2/assets/css/admin.css" rel="stylesheet" type="text/css" />
+
+		<link href="../basic/css/demo.css" rel="stylesheet" type="text/css" />
+
+		<link href="../css/hmstyle.css" rel="stylesheet" type="text/css"/>
+		<link href="../css/skin.css" rel="stylesheet" type="text/css" />
+		<script src="../AmazeUI-2.4.2/assets/js/jquery.min.js"></script>
+		<script src="../AmazeUI-2.4.2/assets/js/amazeui.min.js"></script>
+
+	</head>
+
+	<body>
+			<div class="banner">
+                      <!--轮播 -->
+						<div class="am-slider am-slider-default scoll" data-am-flexslider id="demo-slider-0">
+							<ul class="am-slides">
+								<li class="banner1"><a href="introduction.html"><img id='img0' src="" /></a></li>
+								<li class="banner2"><a><img id='img1' src="" /></a></li>
+								<li class="banner3"><a><img id='img2' src="" /></a></li>
+								<li class="banner4"><a><img id='img3' src="" /></a></li>
+
+							</ul>
+						</div>
+						<div class="clear"></div>	
+			</div>
+			<div class="shopNav">
+				<div class="slideall">
+
+
+						<!--轮播-->
+						
+						<script type="text/javascript">
+							(function() {
+								$('.am-slider').flexslider();
+							});
+							$(document).ready(function() {
+								$("li").hover(function() {
+									$(".category-content .category-list li.first .menu-in").css("display", "none");
+									$(".category-content .category-list li.first").removeClass("hover");
+									$(this).addClass("hover");
+									$(this).children("div.menu-in").css("display", "block")
+								}, function() {
+									$(this).removeClass("hover")
+									$(this).children("div.menu-in").css("display", "none")
+								});
+							})
+						</script>
+
+			</div>
+			<div class="shopMainbg">
+				<div class="shopMain" id="shopmain">
+					<div class="am-g am-g-fixed recommendation">
+						<div class="clock am-u-sm-3" >
+						</div>
+						<div id = 'shop'>
+
+						</div>
+
+		</div>
+		</div>
+		<!--引导 -->
+		<div class="navCir">
+			<li class="active"><a href="home.html"><i class="am-icon-home "></i>首页</a></li>
+			<!--<li><a href="sort.html"><i class="am-icon-list"></i>分类</a></li>-->
+			<li><a href="shopcart.html"><i class="am-icon-shopping-basket"></i>购物车</a></li>	
+			<li><a href="../person/personindex.html"><i class="am-icon-user"></i>我的</a></li>
+		</div>
+
+		<script>
+			// window.jQuery || document.write('<script src="basic/js/jquery.min.js "><\/script>');
+		</script>
+		<!-- <script type="text/javascript " src="../basic/js/quick_links.js "></script> -->
+
+
+
+	</body>
+
+</html>
+				<script type="text/javascript " src="../js/common.js "></script>
+				<script type="text/javascript " src="../js/banner.js "></script>
+				<script type="text/javascript " src="../js/product.js "></script>
