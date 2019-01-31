@@ -23,7 +23,7 @@ $(function () {
                 "<ul class='item-content clearfix'>" +
                 "<li class='td td-chk'>" +
                 "<div class='cart-checkbox '>" +
-                "<input class='check' id='J_CheckBox_170769542747' name='checkbox' value="+ data[i].price +" type='checkbox'>" +
+                "<input class='check' id='J_CheckBox_170769542747' name='checkbox' hello="+ data[i].price +" value="+ data[i].id +" type='checkbox'>" +
                 "<label for='J_CheckBox_170769542747'></label>" +
                 "</div>" +
                 "</li>" +
@@ -84,6 +84,23 @@ $(function () {
         return str;
     }
 
+    /**
+     * 点击结算按钮
+     */
+    $('#J_Go').on('click',function () {
+
+        var ids = [];
+        $('input[name="checkbox"]').each(function () {
+            if($(this).is(':checked')){
+                var id = $(this).val();
+                ids.push(id);
+            }
+        })
+        if(ids.length == 0){
+            return false;
+        }
+        localStorage.setItem('ids', JSON.stringify(ids));
+    });
 
     /**
      * 点击选中所有复选框
@@ -94,11 +111,12 @@ $(function () {
                 $(this).prop("checked",true);
             });
             var all = getAllPrice();
-            $('#J_Total').append(all);
+            $('#J_Total').text(all);
             console.log(all);
         }else{
             $('input[name="checkbox"]').each(function(){
                 $(this).prop("checked",false);
+                $('#J_Total').text(0);
             });
         }
     });
@@ -107,7 +125,7 @@ $(function () {
      * 点击复选框计算总价格
      */
     $('input[name="checkbox"]').on('click', function () {
-        var price = $(this).val();
+        var price = $(this).attr('hello');
         var allPrice = $('#J_Total').text();
 
         if ($(this).is(':checked')) {
@@ -134,4 +152,5 @@ $(function () {
         allPrice = allPrice / 100;
         return allPrice;
     }
+
 });

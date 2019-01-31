@@ -5,7 +5,6 @@ window.base={
         if(!params.type){
             params.type='get';
         }
-        console.log(params);
         var that=this;
         $.ajax({
             type:params.type,

@@ -1,20 +1,13 @@
 $(function(){
 
-    /*    if(!window.base.getLocalStorage('token')){
-            window.location.href = 'login.html';
-        }*/
-    $("#pay").click(function () {
-        console.log('hello world');
-        pay();
-    });
+        // if(!window.base.getLocalStorage('token')){
+        //     window.location.href = 'login.html';
+        // }
 
-    wxConfig();
-    pay();
-
-    function pay() {
+    function pay(data) {
         var params={
             url:'pay/pre_order',
-            data:{id:41},
+            data:{id:data},
             type:'POST',
             tokenFlag:true,
             sCallback:function(res) {
@@ -26,7 +19,7 @@ $(function(){
                     signType: res.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
                     paySign: res.paySign, // 支付签名
                     success: function (res) {
-                        alert('pay success');
+                        location.href("success.html");
                     }
                 });
 
@@ -39,11 +32,11 @@ $(function(){
     }
 
     function wxConfig() {
-        var params={
-            url:"oauth/signature?url=" + encodeURIComponent(location.href.split('#')[0]),
-            type:'GET',
-            tokenFlag:true,
-            sCallback:function(res) {
+        var params = {
+            url: "oauth/signature?url=" + encodeURIComponent(location.href.split('#')[0]),
+            type: 'GET',
+            tokenFlag: true,
+            sCallback: function (res) {
                 console.log(res);
 
                 wx.config({
@@ -56,161 +49,137 @@ $(function(){
                 });
                 wx.ready(function () {
                     alert(1);
-                    // pay();
                 });
                 wx.error(function () {
                     alert(2);
                 });
             },
-            eCallback:function (res) {
+            eCallback: function (res) {
                 console.log(res);
             }
         };
         window.base.getData(params);
     }
+    getOrderShop();
+
+    /**
+     * 加载订单页面
+     */
+    function getOrderShop() {
+         ids = localStorage.getItem('ids');
+        ids = JSON.parse(ids);
+        orderShop = getShopCacheByOrder(ids);
+        var result = mixHtml(orderShop);
+        $('#STR').append(result['str']);
+        $('#allPrice').text(result['allPrice']);
+    }
 
 
-    /*
-    * 获取数据 分页
-    * params:
-    * pageIndex - {int} 分页下表  1开始
-    */
 
-    function getOrders(pageIndex){
-        var params={
-            url:'banner/1',
-            tokenFlag:true,
-            sCallback:function(res) {
-                console.log(res);
-                var data = res.items;
-                var len = data.length;
-                for(var i=0; i < len; i++){
-                    var url = data[i]['img']['url'];
-                    $("#img"+i).attr('src',url);
+    /**
+     * 下订单，调用服务器下订单Api，
+     * 检测库存，有库存下单成功，订单写入数据库
+     * 返回true,再调用支付接口；
+     */
+    function placeOrder() {
+        var order = getShopCacheByOrder(ids, placeOrder);
+        var params = {
+            'url' : 'order/place',
+            'type': 'post',
+            'data': order,
+            'sCallback' : function (res) {
+
+                if(res.pass == true){
+                    console.log(res);
+                    console.log(res.orderID);
+                    //调用wx.config()
+                    wxConfig();
+                    pay(res.orderID);
                 }
-            }
-        };
-        window.base.getData(params);
-    }
-
-    /*拼接html字符串*/
-    function getOrderHtmlStr(res){
-        var data = res.data.data;
-        if (data){
-            var len = data.length,
-                str = '', item;
-            if(len>0) {
-                for (var i = 0; i < len; i++) {
-                    item = data[i];
-                    str += '<tr>' +
-                        '<td>' + item.order_no + '</td>' +
-                        '<td>' + item.snap_name + '</td>' +
-                        '<td>' + item.total_count + '</td>' +
-                        '<td>￥' + item.total_price + '</td>' +
-                        '<td>' + getOrderStatus(item.status) + '</td>' +
-                        '<td>' + item.create_time + '</td>' +
-                        '<td data-id="' + item.id + '">' + getBtns(item.status) + '</td>' +
-                        '</tr>';
-                }
-            }
-            else{
-                ctrlLoadMoreBtn();
-                moreDataFlag=false;
-            }
-            return str;
-        }
-        return '';
-    }
-
-    /*根据订单状态获得标志*/
-    function getOrderStatus(status){
-        var arr=[{
-            cName:'unpay',
-            txt:'未付款'
-        },{
-            cName:'payed',
-            txt:'已付款'
-        },{
-            cName:'done',
-            txt:'已发货'
-        },{
-            cName:'unstock',
-            txt:'缺货'
-        }];
-        return '<span class="order-status-txt '+arr[status-1].cName+'">'+arr[status-1].txt+'</span>';
-    }
-
-    /*根据订单状态获得 操作按钮*/
-    function getBtns(status){
-        var arr=[{
-            cName:'done',
-            txt:'发货'
-        },{
-            cName:'unstock',
-            txt:'缺货'
-        }];
-        if(status==2 || status==4){
-            var index=0;
-            if(status==4){
-                index=1;
-            }
-            return '<span class="order-btn '+arr[index].cName+'">'+arr[index].txt+'</span>';
-        }else{
-            return '';
-        }
-    }
-
-    /*控制加载更多按钮的显示*/
-    function ctrlLoadMoreBtn(){
-        if(moreDataFlag) {
-            $('.load-more').hide().next().show();
-        }
-    }
-
-    /*加载更多*/
-    $(document).on('click','.load-more',function(){
-        if(moreDataFlag) {
-            pageIndex++;
-            getOrders(pageIndex);
-        }
-    });
-    /*发货*/
-    $(document).on('click','.order-btn.done',function(){
-        var $this=$(this),
-            $td=$this.closest('td'),
-            $tr=$this.closest('tr'),
-            id=$td.attr('data-id'),
-            $tips=$('.global-tips'),
-            $p=$tips.find('p');
-        var params={
-            url:'order/delivery',
-            type:'put',
-            data:{id:id},
-            tokenFlag:true,
-            sCallback:function(res) {
-                if(res.code.toString().indexOf('2')==0){
-                    $tr.find('.order-status-txt')
-                        .removeClass('pay').addClass('done')
-                        .text('已发货');
-                    $this.remove();
-                    $p.text('操作成功');
-                }else{
-                    $p.text('操作失败');
-                }
-                $tips.show().delay(1500).hide(0);
             },
-            eCallback:function(){
-                $p.text('操作失败');
-                $tips.show().delay(1500).hide(0);
+            'eCallbakc' : function (e) {
+                console.log(e);
             }
-        };
+        }
         window.base.getData(params);
-    });
+    }
 
-    /*退出*/
-    $(document).on('click','#login-out',function(){
-        window.base.deleteLocalStorage('token');
-        window.location.href = 'login.html';
+
+    /**
+     * 从缓存中获取订单商品数据
+     * @param data
+     */
+    function getShopCacheByOrder(data, type) {
+        var shop = localStorage.getItem('shop');
+        shop = JSON.parse(shop);
+
+        var orderObj = {};
+        for(var i in data){
+            for (var s in shop){
+                if(shop[s]['id'] == data[i]){
+                    if(type == placeOrder){
+                        orderObj[s] = {
+                            'product_id': shop[s]['id'],
+                            'count': shop[s]['count'],
+                        }
+                    }else{
+                        orderObj[s] = shop[s];
+                    }
+                }
+            }
+        }
+        return orderObj;
+    }
+
+    /**
+     * 拼接html , 和总支付金额
+     * @param data
+     * @returns {{allPrice: number, str: string}}
+     */
+    function mixHtml(data) {
+        var str = ''
+            allPrice = 0;
+
+        for(var i in data){
+            allPrice += parseInt(data[i]['price'] * 100) / 100;
+
+            str += "<ul class='item-content clearfix'>" +
+                "<div class='pay-phone'>" +
+                "<li class='td td-item'>" +
+                "<div class='item-pic'>" +
+                "<a href='#' class='J_MakePoint'>" +
+                "<img  style='width: 80px;height: 80px;' src="+ data[i].main_img_url +" class='itempic J_ItemImg'></a>" +
+                "</div>" +
+                "<div class='item-info'>" +
+                "<div class='item-basic-info'>" +
+                "<a href='#' class='item-title J_MakePoint' data-point='tbcart.8.11'>" + data[i].name + "</a>" +
+                "</div>" +
+                "</div>" +
+                "</li>" +
+                "" +
+                "<li class='td td-price'>" +
+                "<div class='item-price price-promo-promo'>" +
+                "<div class='price-content'>" +
+                "<em class='J_Price price-now'>"+ data[i].price +"</em>" +
+                "</div>" +
+                "</div>" +
+                "</li>" +
+                "</div>" +
+                "" +
+                "</ul>";
+        }
+        var data = {
+            'allPrice':allPrice,
+            'str':str,
+        }
+        return data;
+    }
+
+    /**
+     * 点击支付事件
+     */
+    $('#pay').click(function () {
+        placeOrder();
     });
 });
 
