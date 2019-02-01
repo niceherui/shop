@@ -25,7 +25,7 @@ window.base={
         });
     },
 
-    setLocalStorage:function(key,val){
+        setLocalStorage:function(key,val){
         var exp=new Date().getTime()+2*24*60*60*100;  //令牌过期时间
         var obj={
             val:val,

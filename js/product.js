@@ -6,14 +6,14 @@ $(function () {
             url:'product/recent',
             type:'get',
             sCallback: function (res) {
-                console.log(res);
+                // console.log(res);
                 var str = getProductStr(res);
-                console.log(str);
+                // console.log(str);
                 $("#shop").append(str);
 
             },
             eCallback:function (e) {
-                console.log(e);
+                // console.log(e);
             }
         }
         window.base.getData(params);

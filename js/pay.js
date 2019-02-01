@@ -3,11 +3,12 @@ $(function(){
         // if(!window.base.getLocalStorage('token')){
         //     window.location.href = 'login.html';
         // }
+    tokenData = localStorage.getItem('token');
 
     function pay(data) {
         var params={
             url:'pay/pre_order',
-            data:{id:data},
+            data:{id:data,token:tokenData},
             type:'POST',
             tokenFlag:true,
             sCallback:function(res) {
@@ -19,8 +20,13 @@ $(function(){
                     signType: res.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
                     paySign: res.paySign, // 支付签名
                     success: function (res) {
-                        location.href("success.html");
-                    }
+                        alert(res);
+                    },
+                    cancel: function () {
+
+                    },
+                    fail
+
                 });
 
             },
@@ -82,11 +88,11 @@ $(function(){
      * 返回true,再调用支付接口；
      */
     function placeOrder() {
-        var order = getShopCacheByOrder(ids, placeOrder);
+        var orderData = getShopCacheByOrder(ids, placeOrder);
         var params = {
-            'url' : 'order/place',
+            'url' : 'order/place?XDEBUG_SESSION_START=19914',
             'type': 'post',
-            'data': order,
+            'data': {order:orderData,token:tokenData},
             'sCallback' : function (res) {
 
                 if(res.pass == true){
