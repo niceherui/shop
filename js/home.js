@@ -1,13 +1,17 @@
 $(function(){
 
 
-    if(!localStorage.getItem('token')){
-        var hello = GetQueryString('token');
-        localStorage.setItem('token', hello);
+    // window.base.deleteLocalStorage('token');
+    // localStorage.removeItem('token');
+    // var token = window.base.getLocalStorage('token');
+    // alert(token);
+
+    if(token = GetQueryString('token')){
+        window.base.setLocalStorage('token', token);
     }
-    var token = localStorage.getItem('token');
-    console.log(token);
-    alert(token);
+    // var token = window.base.getLocalStorage('token');
+    // alert(token);
+
 
     /**
      * 获取地址栏中的指定参数
