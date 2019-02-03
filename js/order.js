@@ -1,12 +1,20 @@
 $(function () {
 
+    // tokenData = window.base.getLocalStorage('token');
+    // tokenData = localStorage.getItem('token');
+    // console.log(tokenData);
+
+    // return;
+    // if(!tokenData){
+    //     window.location.href = 'home.html';
+    // }
     getOrder();
 
     function getOrder() {
         var params = {
             'url': 'order/summary',
             'type':'post',
-            'data':{'page':1,'count':5},
+            //'data':{token:tokenData},
             sCallback:function (res) {
                 console.log(res);
                 getOrderBySelf(res);
@@ -41,7 +49,7 @@ $(function () {
                 "<li class='td td-item'>" +
                 "<div class='item-pic'>" +
                 "<a href='#' class='J_MakePoint'>" +
-                "<img src='../images/kouhong.jpg_80x80.jpg' class='itempic J_ItemImg'>" +
+                "<img src="+ data[i].snap_img +" class='itempic J_ItemImg'>" +
                 "</a>" +
                 "</div>" +
                 "<div class='item-info'>" +
@@ -85,8 +93,8 @@ $(function () {
                 "</div>" +
                 "</li>" +
                 "<li class='td td-change'>" +
-                "<div class='am-btn am-btn-danger anniu'>" +
-                "&nbsp 付 款 &nbsp</div>" +
+                "<div class='am-btn am-btn-danger anniu' id="+ data[i]['id'] +">" +
+                "<script>if("+ data[i].status +"== 1){$('#"+ data[i]['id'] +"').text(' 支 付 ');}</script></div>" +
                 "</li>" +
                 "</div>" +
                 "</div>" +
@@ -94,4 +102,12 @@ $(function () {
         }
         return str;
     }
+
+    $('.am-btn am-btn-danger anniu').on('click', function () {
+        alert('hello');
+        console.log('jack');
+        var id = $('#am-btn am-btn-danger anniu').attr('id');
+        console.log(id);
+    });
+
 });
