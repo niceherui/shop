@@ -1,13 +1,11 @@
 $(function () {
 
     // tokenData = window.base.getLocalStorage('token');
-    // tokenData = localStorage.getItem('token');
-    // console.log(tokenData);
-
-    // return;
+    //
     // if(!tokenData){
     //     window.location.href = 'home.html';
     // }
+
     getOrder();
 
     function getOrder() {
@@ -16,8 +14,16 @@ $(function () {
             'type':'post',
             //'data':{token:tokenData},
             sCallback:function (res) {
-                console.log(res);
                 getOrderBySelf(res);
+
+
+                $('.Pokemon').click(function () {
+                    var id = $('this').attr('id');
+                    alert(id);
+
+
+                });
+
             },
             eCallback:function (e) {
 
@@ -93,7 +99,7 @@ $(function () {
                 "</div>" +
                 "</li>" +
                 "<li class='td td-change'>" +
-                "<div class='am-btn am-btn-danger anniu' id="+ data[i]['id'] +">" +
+                "<div  style='font-size: 14px;color: #fff;background-color: #dd514c;border-color: #dd514c;display: inline-block;margin-bottom: 0;padding: 0.5em 1em;' class='Pokemon' id="+ data[i]['id'] +">" +
                 "<script>if("+ data[i].status +"== 1){$('#"+ data[i]['id'] +"').text(' 支 付 ');}</script></div>" +
                 "</li>" +
                 "</div>" +
@@ -103,11 +109,5 @@ $(function () {
         return str;
     }
 
-    $('.am-btn am-btn-danger anniu').on('click', function () {
-        alert('hello');
-        console.log('jack');
-        var id = $('#am-btn am-btn-danger anniu').attr('id');
-        console.log(id);
-    });
 
 });
