@@ -1,11 +1,11 @@
 $(function(){
 
 
-    // tokenData = window.base.getLocalStorage('token');
-    //
-    // if(!tokenData){
-    //     window.location.href = 'home.html';
-    // }
+    tokenData = window.base.getLocalStorage('token');
+
+    if(!tokenData){
+        window.location.href = 'home.html';
+    }
 
     function deleteCacheShop() {
         getShopCacheByOrder(ids, 'delete');
@@ -39,7 +39,6 @@ $(function(){
      * 返回true,再调用支付接口；
      */
     function placeOrder() {
-        alert('hello');
         var orderData = getShopCacheByOrder(ids, placeOrder);
         var params = {
             'url' : 'order/place?XDEBUG_SESSION_START=19914',
@@ -78,13 +77,11 @@ $(function(){
                     success: function (res) {
                         //删除购物车中已经支付的商品
                         //跳转页面
-                        alert('支付成功');
                         deleteCacheShop();
                         window.location.href = 'personindex.html';
 
                     },
                     cancel: function () {
-                        alert('取消支付');
                         deleteCacheShop();
                         window.location.href = 'personindex.html';
 
