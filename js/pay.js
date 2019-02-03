@@ -1,11 +1,11 @@
 $(function(){
 
 
-    tokenData = window.base.getLocalStorage('token');
-
-    if(!tokenData){
-        window.location.href = 'home.html';
-    }
+    // tokenData = window.base.getLocalStorage('token');
+    //
+    // if(!tokenData){
+    //     window.location.href = 'home.html';
+    // }
 
     function deleteCacheShop() {
         getShopCacheByOrder(ids, 'delete');
@@ -18,6 +18,7 @@ $(function(){
      */
     function getOrderShop() {
         ids = localStorage.getItem('ids');
+        console.log(ids);
         ids = JSON.parse(ids);
         orderShop = getShopCacheByOrder(ids);
         var result = mixHtml(orderShop);
@@ -38,11 +39,12 @@ $(function(){
      * 返回true,再调用支付接口；
      */
     function placeOrder() {
+        alert('hello');
         var orderData = getShopCacheByOrder(ids, placeOrder);
         var params = {
             'url' : 'order/place?XDEBUG_SESSION_START=19914',
             'type': 'post',
-            'data': {order:orderData,token:tokenData},
+            'data': {order:orderData},
             'sCallback' : function (res) {
 
                 if(res.pass == true){
@@ -52,7 +54,7 @@ $(function(){
 
                 }
             },
-            'eCallbakc' : function (e) {
+            'eCallback' : function (e) {
                 alert('下订单失败');
                 console.log(e);
             }
@@ -76,10 +78,16 @@ $(function(){
                     success: function (res) {
                         //删除购物车中已经支付的商品
                         //跳转页面
+                        alert('支付成功');
                         deleteCacheShop();
+                        window.location.href = 'personindex.html';
+
                     },
                     cancel: function () {
-                        // alert('取消支付');
+                        alert('取消支付');
+                        deleteCacheShop();
+                        window.location.href = 'personindex.html';
+
                     },
                     fail: function (){
                         // alert('支付失败');
@@ -103,7 +111,7 @@ $(function(){
             sCallback: function (res) {
 
                 wx.config({
-                    debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                    debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
                     appId: 'wx0b0cd5bf0d5fbea4', // 必填，公众号的唯一标识
                     timestamp: res.timestamp, // 必填，生成签名的时间戳
                     nonceStr: res.nonceStr, // 必填，生成签名的随机串
