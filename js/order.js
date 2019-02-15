@@ -1,34 +1,41 @@
 $(function () {
 
+    tokenData = '0da0cfcfb1582ab4479b745936f4deec';
+
     // tokenData = window.base.getLocalStorage('token');
-    //
-    // if(!tokenData){
-    //     window.location.href = 'home.html';
-    // }
+
+    if(!tokenData){
+        window.location.href = 'home.html';
+    }
 
     getOrder();
+    getUserInfo();
 
     function getOrder() {
         var params = {
             'url': 'order/summary',
             'type':'post',
-            //'data':{token:tokenData},
+            'data':{token:tokenData},
             sCallback:function (res) {
                 getOrderBySelf(res);
 
+                $('.Pokemon').click(function (e) {
+                    var id = $(e.target).attr("id");
 
-                $('.Pokemon').click(function () {
-                    var id = $('this').attr('id');
-                    alert(id);
+                    //已经支付过的不能再次支付
+                    if($('#'+id).text() == ' 已 支 付 '){
+                        alert('已支付');
+                        return;
+                    }
 
-
+                    window.base.wxConfig();
+                    window.base.pay(id, tokenData);
                 });
 
             },
             eCallback:function (e) {
 
             }
-
         }
         window.base.getData(params);
     }
@@ -41,7 +48,6 @@ $(function () {
 
     function mixOrder(data) {
         data = data.data.data;
-        console.log(data);
         var str = "";
         for(var i in data){
             str += "<div class='order-title'>" +
@@ -100,13 +106,37 @@ $(function () {
                 "</li>" +
                 "<li class='td td-change'>" +
                 "<div  style='font-size: 14px;color: #fff;background-color: #dd514c;border-color: #dd514c;display: inline-block;margin-bottom: 0;padding: 0.5em 1em;' class='Pokemon' id="+ data[i]['id'] +">" +
-                "<script>if("+ data[i].status +"== 1){$('#"+ data[i]['id'] +"').text(' 支 付 ');}</script></div>" +
+                "<script>if("+ data[i].status +"== 1){$('#"+ data[i]['id'] +"').text(' 支 付 ');}else{$('#"+ data[i]['id'] +"').text(' 已 支 付 ');}</script></div>" +
                 "</li>" +
                 "</div>" +
                 "</div>" +
                 "</div>";
         }
         return str;
+    }
+
+    //获取用户基本信息
+    function getUserInfo() {
+        var params = {
+            'type':'post',
+            'url':'token/userInfo',
+            'data':{token:tokenData},
+            sCallback:function(res){
+                console.log(res);
+                userInfo(res);
+            },
+            eCallback:function(e){
+
+            }
+        }
+
+        window.base.getData(params);
+    }
+
+    function userInfo(res) {
+        if(!res){return ;}
+        $('#user a img').attr('src', res.headimgurl);
+        $('#user em').text(res.nickname);
     }
 
 
