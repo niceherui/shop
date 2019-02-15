@@ -2,7 +2,7 @@ $(function(){
 
 
     // window.base.deleteLocalStorage('token');
-    // localStorage.removeItem('token');
+     //localStorage.removeItem('shop');
     // var token = window.base.getLocalStorage('token');
     // alert(token);
 

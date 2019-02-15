@@ -9,9 +9,10 @@ $(function () {
     getProductInfo();
 
     $('#add,#min').click(function () {
-        var count = $('#text_box').val();
-        var totalPrice = productInfoData.price * count;
-        $('#price1').html(totalPrice);
+        count = Number($('#text_box').val());
+        price = Number(productInfoData.price * count);
+
+        $('#price1').html(price);
     });
 
 
@@ -19,13 +20,10 @@ $(function () {
      * 商品加入购物车
      */
     $('#shopCar').click(function () {
-        //缓存中有购物车数据，和没有数据
-        //没有数据就新增加，有数据就比对当前数据，
-        //比对当前数据， 如果当前商品在缓存中有就在原缓存增加数据，如果没有就在缓存中增加新数据
+        // 缓存中有购物车数据，和没有数据
+        // 没有数据就新增加，有数据就比对当前数据，
+        // 比对当前数据, 如果当前商品在缓存中有就在原缓存增加数据，如果没有就在缓存中增加新数据
         // window.base.deleteLocalStorage('shop');
-
-        var price = Number($('#price1').text());
-        var count = Number($('#text_box').val());
 
         var shop = localStorage.getItem('shop');
         var shop = JSON.parse(shop);
@@ -36,7 +34,6 @@ $(function () {
             for(var i in shop){
                 if (shop[i]['id'] == productInfoData['id']) {
                     haveShopCache = 1;
-                    var cachePrice = Number(shop[i]['price']);
                     var cacheCount = Number(shop[i]['count']);
                     break;
                 }
@@ -51,21 +48,24 @@ $(function () {
                 img_id: productInfoData.img_id,
                 main_img_url: productInfoData.main_img_url,
                 name:productInfoData.name,
-                price: (parseInt(cachePrice * 100) + parseInt(price * 100)) / 100,
                 count: cacheCount + count,
             };
         } else {
+            count = Number($('#text_box').val());
+
+            console.log(count);
             shopData = {
                 'id': productInfoData.id,
                 'img_id': productInfoData.img_id,
                 'main_img_url': productInfoData.main_img_url,
                 'name': productInfoData.name,
-                'price': productInfoData.price,
                 'count': count,
             };
         }
 
         shop[productInfoData.name] = shopData;
+        shop[productInfoData.name]['price'] = productInfoData.price;
+
         console.log(shop);
         localStorage.setItem('shop',JSON.stringify(shop));
     });

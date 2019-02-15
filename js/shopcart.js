@@ -1,7 +1,6 @@
+//购物车
 $(function () {
-
     shopCar();
-
 
     function shopCar() {
         shop = localStorage.getItem('shop');
@@ -9,6 +8,7 @@ $(function () {
         console.log(shop);
         var str = mix(shop);
         $("#showShopCar").append(str);
+
     }
 
     /**
@@ -23,7 +23,7 @@ $(function () {
                 "<ul class='item-content clearfix'>" +
                 "<li class='td td-chk'>" +
                 "<div class='cart-checkbox '>" +
-                "<input class='check' id='J_CheckBox_170769542747' name='checkbox' hello="+ data[i].price +" value="+ data[i].id +" type='checkbox'>" +
+                "<input class='check' id='J_CheckBox_170769542747' name='checkbox' hello="+ data[i].price +" count = "+ data[i].count +" value="+ data[i].id +" type='checkbox'>" +
                 "<label for='J_CheckBox_170769542747'></label>" +
                 "</div>" +
                 "</li>" +
@@ -60,7 +60,7 @@ $(function () {
                 "<div class='item-amount '>" +
                 "<div class='sl'>" +
                 "<input class='min am-btn' name='' type='button' value='-' />" +
-                "<input class='text_box' name='' type='text' value="+ data[i].count +" style='width:30px;' />" +
+                "<input class='text_box' name='' id='count' type='text' value="+ data[i].count +" style='width:30px;' />" +
                 "<input class='add am-btn' name='' type='button' value='+' />" +
                 "</div>" +
                 "</div>" +
@@ -76,13 +76,22 @@ $(function () {
                 "<a title='移入收藏夹' class='btn-fav' href='#'>" +
                 "移入收藏夹</a>" +
                 "<a href='javascript:;' data-point-url='#' class='delete'>" +
-                "删除</a>" +
+                "<span class='del' id='"+ data[i]['name'] +"' >删除</span></a>" +
                 "</div>" +
                 "</li>" +
                 "</ul>";
         }
         return str;
     }
+
+    //点击删除商品
+    $('.del').click(function (e) {
+        var name = $(e.target).attr('id');
+        alert(name);
+        delete shop[name];
+        localStorage.setItem('shop', JSON.stringify(shop));
+        window.location.reload();
+    });
 
     /**
      * 点击结算按钮
@@ -96,6 +105,7 @@ $(function () {
                 ids.push(id);
             }
         })
+
         if(ids.length == 0){
             return false;
         }
@@ -110,9 +120,10 @@ $(function () {
             $('input[name="checkbox"]').each(function(){
                 $(this).prop("checked",true);
             });
+
             var all = getAllPrice();
             $('#J_Total').text(all);
-            console.log(all);
+
         }else{
             $('input[name="checkbox"]').each(function(){
                 $(this).prop("checked",false);
@@ -129,12 +140,13 @@ $(function () {
         var allPrice = $('#J_Total').text();
 
         if ($(this).is(':checked')) {
-
-            allPrice = (parseInt(allPrice * 100) + parseInt(price * 100));
+            var count = $(this).attr('count');
+            allPrice = parseInt(allPrice * 100) + parseInt(price * 100) * count;
         } else {
-
-            allPrice = parseInt(allPrice * 100) - parseInt(price * 100);
+            var count = $(this).attr('count');
+            allPrice = parseInt(allPrice * 100) - parseInt(price * 100) * count;
         }
+
         allPrice = allPrice / 100;
         $('#J_Total').text(allPrice);
 
@@ -146,8 +158,9 @@ $(function () {
      */
     function getAllPrice() {
         var allPrice = 0;
+
         for(var i in shop){
-            allPrice += parseInt(shop[i]['price'] *100);
+            allPrice += parseInt(shop[i]['price'] * 100) * shop[i]['count'];
         }
         allPrice = allPrice / 100;
         return allPrice;
