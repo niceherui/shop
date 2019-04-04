@@ -10,6 +10,7 @@ $(function () {
 
     getOrder();
     getUserInfo();
+    getUserPoin()
 
     function getOrder() {
         var params = {
@@ -24,7 +25,7 @@ $(function () {
 
                     //已经支付过的不能再次支付
                     if($('#'+id).text() == ' 已 支 付 '){
-                        alert('已支付');
+                        layer.msg('已支付');
                         return;
                     }
 
@@ -139,5 +140,19 @@ $(function () {
         $('#user em').text(res.nickname);
     }
 
+    function getUserPoin(){
+        var params = {
+            'type':'get',
+            'url': 'oauth/getUserPoin?token='+tokenData,
+            sCallback:function(res){
+                console.log(res);
+
+            },
+            eCallback:function (res) {
+                console.log('请求失败');
+            }
+        };
+        window.base.getData(params);
+    }
 
 });
